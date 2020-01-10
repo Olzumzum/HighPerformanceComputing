@@ -22,8 +22,11 @@ int searchMatrixDimension(int SIZE_MATRIZA)
     return SIZE_MATRIZA;
 }
 
-/** чтение данных из файла */
-int readerMatriz()
+/** 
+ * чтение данных из файла 
+ * возвращает вектор значений матрицы
+ */
+vector<int> loadFile()
 {
     setlocale(LC_ALL, "rus");
 
@@ -36,10 +39,6 @@ int readerMatriz()
     //буфер данных
     vector<int> vectorBuffer(50);
     int indexBuffer = 0;
-    //размерность массива
-    int SIZE_MATRIZA = 0;
-    //массив получаемых данных
-    int matriza[SIZE_MATRIZA][SIZE_MATRIZA];
     const char minus = '-';
     //строка с цифрой матрицы
     string numberValue;
@@ -59,41 +58,65 @@ int readerMatriz()
             {
                 //если число отрицательное - запомним минуc
                 if (ch == minus)
-                {
                     numberValue = minus;
-                }
                 else
                 {
                     numberValue += ch;
-                    vectorBuffer[indexBuffer] = atoi(numberValue.c_str());
+                    vectorBuffer[indexBuffer++] = atoi(numberValue.c_str());
 
-                    //увеличиваем счетчик элементов
-                    indexBuffer++;
                     //очищаем буфер
                     numberValue = "";
                 }
             }
         }
-        //получаем размерность матрицы
-        SIZE_MATRIZA = searchMatrixDimension(indexBuffer);
-        indexBuffer = 0;
-
         //закрываем файл с данными
         fin.close();
 
-        //заполняем массив матрицы
-        for (int i = 0; i < SIZE_MATRIZA; i++)
+        vector<int> vectorValue(indexBuffer);
+        for(int i = 0; i < indexBuffer; i++){
+            vectorValue[i] = vectorBuffer[i];
+        }
+        
+        return vectorValue;
+    }
+}
+
+/**
+ * возвращает размерность матрицы
+ */
+int getSizeMatrix(vector<int> vectorValue)
+{
+    int sizeMatrix = vectorValue.size();
+
+    for (int i = 2; i < 10; i++)
+    {
+        if ( sizeMatrix % i == 0)
         {
-            for (int j = 0; j < SIZE_MATRIZA; j++)
-            {
-                matriza[i][j] = vectorBuffer[indexBuffer++];
-                cout << matriza[i][j];
-            }
-            cout << endl;
+            sizeMatrix = i;
+            break;
         }
     }
+    return sizeMatrix;
+}
 
-    return SIZE_MATRIZA;
+/** 
+ * заполняем матрицу значениями 
+ */
+void fillMatrix(int **matrix, int sizeMatrix, vector<int> vectorValue)
+{
+    int indexVerctorValue = 0;
+    //заполняем массив матрицы
+    for (int i = 0; i < sizeMatrix; i++)
+    {
+        matrix[i] = new int[sizeMatrix];
+
+        for (int j = 0; j < sizeMatrix; j++)
+        {
+            matrix[i][j] = vectorValue[indexVerctorValue++];
+            cout << matrix[i][j];
+        }
+        cout << endl;
+    }
 }
 
 /** поиск определителя матрицы */
@@ -103,7 +126,7 @@ int opredelitel(vector<int> minor)
 }
 
 /** подсчет определителя матрицы размерностью больше 2 */
-int bigOpredelitel(int matriza[3][3], int MATRIZA_SIZE)
+int bigOpredelitel(int** matriza, int MATRIZA_SIZE)
 {
     //определитель матрицы
     int oprMatr = 0;
@@ -150,21 +173,20 @@ int bigOpredelitel(int matriza[3][3], int MATRIZA_SIZE)
 
 int main()
 {
-    /** размерность матрицы */
-    int MATRIZA_SIZE = 3;
-    /** исходный вектор */
-    int matriza[3][3] = {{2, 5, 7}, {6, 3, 4}, {5, -2, -3}};
 
-    readerMatriz();
+    // чтение матрицы из файла */
+    vector<int> vectorValue = loadFile();
+    int sizeMAtrix = getSizeMatrix(vectorValue);
+    int **matrix = new int *[sizeMAtrix];
+    fillMatrix(matrix, sizeMAtrix, vectorValue);
 
-    // cout << atoi(s);
     /** вычисление определителя */
-    /* int oprMatr = bigOpredelitel(matriza, MATRIZA_SIZE);
+      int oprMatr = bigOpredelitel(matrix, sizeMAtrix);
 
     if (oprMatr == 0)
         cout << "Определитель равен нулю, обратная матрица не существует" << endl;
     else
         cout << "Определитель " << oprMatr << endl;
-*/
+
     return 0;
 }
