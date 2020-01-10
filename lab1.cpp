@@ -7,20 +7,7 @@
 #include <stdio.h>
 using namespace std;
 
-int searchMatrixDimension(int SIZE_MATRIZA)
-{
-
-    for (int i = 2; i < 10; i++)
-    {
-        if (SIZE_MATRIZA % i == 0)
-        {
-            SIZE_MATRIZA = i;
-            break;
-        }
-    }
-
-    return SIZE_MATRIZA;
-}
+//загрузка данных
 
 /** 
  * чтение данных из файла 
@@ -73,10 +60,11 @@ vector<int> loadFile()
         fin.close();
 
         vector<int> vectorValue(indexBuffer);
-        for(int i = 0; i < indexBuffer; i++){
+        for (int i = 0; i < indexBuffer; i++)
+        {
             vectorValue[i] = vectorBuffer[i];
         }
-        
+
         return vectorValue;
     }
 }
@@ -90,7 +78,7 @@ int getSizeMatrix(vector<int> vectorValue)
 
     for (int i = 2; i < 10; i++)
     {
-        if ( sizeMatrix % i == 0)
+        if (sizeMatrix % i == 0)
         {
             sizeMatrix = i;
             break;
@@ -113,20 +101,25 @@ void fillMatrix(int **matrix, int sizeMatrix, vector<int> vectorValue)
         for (int j = 0; j < sizeMatrix; j++)
         {
             matrix[i][j] = vectorValue[indexVerctorValue++];
-            cout << matrix[i][j];
         }
         cout << endl;
     }
 }
+//--------------------------------------------------------------------------------------------
+//подсчет определителей
 
-/** поиск определителя матрицы */
+/** 
+ * поиск минора
+ * */
 int opredelitel(vector<int> minor)
 {
     return minor[0] * minor[3] - minor[1] * minor[2];
 }
 
-/** подсчет определителя матрицы размерностью больше 2 */
-int bigOpredelitel(int** matriza, int MATRIZA_SIZE)
+/**  
+ * подсчет определителя матрицы
+ */
+int bigOpredelitel(int **matriza, int MATRIZA_SIZE)
 {
     //определитель матрицы
     int oprMatr = 0;
@@ -171,22 +164,62 @@ int bigOpredelitel(int** matriza, int MATRIZA_SIZE)
     }
 }
 
+//-------------------------------------------------------------------------------------------
+//поиск матрицы миноров
+void searchMatrixMinor(int **minorMatrix, int **matrix, int sizeMatrix)
+{
+    vector<int> vectorMinor(4);
+
+    for (int iRow = 0; iRow < sizeMatrix; iRow++) //строчка
+    {
+        for (int iColm = 0; iColm < sizeMatrix; iColm++) //столбец
+        {
+            int indexVector = 0;
+            for (int i = 0; i < sizeMatrix; i++) //строчка
+            {
+                if (iRow != i)
+                {
+                    for (int j = 0; j < sizeMatrix; j++) //столбец
+                    {
+                        if (iColm != j)
+                        {
+                            //заполнение вектора для получения минора
+                            vectorMinor[indexVector++] = matrix[i][j];
+                        }
+                    }
+                }
+            }
+            minorMatrix[iRow] = new int[sizeMatrix];
+            //подсчет определителя
+            minorMatrix[iRow][iColm] = opredelitel(vectorMinor);
+        }
+    }
+}
+//-------------------------------------------------------------------------------
+//матрица алгебраических дополнений
+void 
+
+//------------------------------------------------------------------------------------
 int main()
 {
-
-    // чтение матрицы из файла */
+    // чтение матрицы из файла
     vector<int> vectorValue = loadFile();
-    int sizeMAtrix = getSizeMatrix(vectorValue);
-    int **matrix = new int *[sizeMAtrix];
-    fillMatrix(matrix, sizeMAtrix, vectorValue);
+    int sizeMatrix = getSizeMatrix(vectorValue);
+    int **matrix = new int *[sizeMatrix];
+    fillMatrix(matrix, sizeMatrix, vectorValue);
 
-    /** вычисление определителя */
-      int oprMatr = bigOpredelitel(matrix, sizeMAtrix);
+    // вычисление определителя
+    int oprMatr = bigOpredelitel(matrix, sizeMatrix);
 
     if (oprMatr == 0)
         cout << "Определитель равен нулю, обратная матрица не существует" << endl;
     else
         cout << "Определитель " << oprMatr << endl;
+
+    //матрица миноров
+    int **minorMatrix = new int *[sizeMatrix];
+    //заполнение матрицы миноров
+    searchMatrixMinor(minorMatrix, matrix, sizeMatrix);
 
     return 0;
 }
