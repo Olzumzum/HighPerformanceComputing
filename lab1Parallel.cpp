@@ -1,7 +1,3 @@
-/**
- * Вычисление обратной матрицы для заданной матрицы
- */ 
-
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
@@ -10,6 +6,7 @@
 #include <cstring>
 #include <stdio.h>
 #include <time.h>
+#include <omp.h>
 using namespace std;
 
 //загрузка данных
