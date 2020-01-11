@@ -19,7 +19,7 @@ using namespace std;
 vector<int> findPrimes(int startN, int endN)
 {
     //вектор для поиска простых чисел
-    vector<bool> is_composite(endN);
+    vector<bool> is_composite(endN + 1);
     //подсчет простых чисел
     int counterPrimes = 0;
 
@@ -47,7 +47,7 @@ vector<int> findPrimes(int startN, int endN)
     }
 
     //подсчет простых чисел
-    for (int i = startN; i < endN; i++)
+    for (int i = startN; i <= endN; i++)
     {
         if (!is_composite[i])
             counterPrimes++;
@@ -70,11 +70,31 @@ vector<int> findPrimes(int startN, int endN)
     return primes;
 }
 
+//проверяем обратное число на простоту
+bool simplicityTest(int circularNumber)
+{
+    //получаем вектор простых чисел от нуля до circularNumber
+    vector<int> numberEratosfen = findPrimes(0, circularNumber - 1);
+
+    //проверяем на делимость
+    for (int j = 2; j < numberEratosfen.size(); j++)
+    {
+        if (circularNumber % numberEratosfen[j] == 0)
+            //у circularNumber есть простой делитель
+            return false;
+    }
+    return true;
+}
+
 /**
  * поиск циркулярно простых чисел
  */
-void findCircularPrime(vector<int> prime)
+vector<int> findCircularPrime(vector<int> prime)
 {
+    //вектор циркулярно простых чисел
+    vector<int> tempVector(prime.size());
+    int iCVector = 0;
+
     int circularNumber;
     for (int i = 0; i <= prime.size(); i++)
     {
@@ -83,25 +103,38 @@ void findCircularPrime(vector<int> prime)
         //счетчик количества цифер в числе
         int count = -1;
         //считаем сколько цифер в числе
-        while(p != 0)
+        while (p != 0)
         {
             count++;
-            p /=10;
+            p /= 10;
         }
 
         p = prime[i];
         //обратное число
-        int cirlularNumber = 0;
+        int circularNumber = 0;
         //получаем обратное число
-        while (p!=0)
+        while (p != 0)
         {
-           cirlularNumber += p % 10 * pow(10, count--);
-           p /= 10;
+            circularNumber += p % 10 * pow(10, count--);
+            p /= 10;
         }
-        
-        
-        
+
+        //проверяем обратное число на простоту
+        if (circularNumber > 10 && simplicityTest(circularNumber))
+        {
+            tempVector[iCVector++] = circularNumber;
+        }
     }
+
+    vector<int> circularVector(iCVector);
+    for (int i = 0; i < iCVector; i++)
+    {
+        circularVector[i] = tempVector[i];
+        cout << circularVector[i] << " ,";
+    }
+    cout << endl;
+
+    return circularVector;
 }
 
 int main()
@@ -117,6 +150,11 @@ int main()
     cin >> startN;
     cout << "Введите конец диапазона: " << endl;
     cin >> endN;
+
+    if (startN <= 0)
+        startN = 1;
+    if (startN > endN)
+        cout << "Вы ввели неверный диапазон";
 
     //поиск простых чисел
     primes = findPrimes(startN, endN);
