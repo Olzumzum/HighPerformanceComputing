@@ -172,6 +172,8 @@ void searchMatrixMinor(int **minorMatrix, int **matrix, int sizeMatrix)
 
     for (int iRow = 0; iRow < sizeMatrix; iRow++) //строчка
     {
+         minorMatrix[iRow] = new int[sizeMatrix];
+
         for (int iColm = 0; iColm < sizeMatrix; iColm++) //столбец
         {
             int indexVector = 0;
@@ -189,15 +191,47 @@ void searchMatrixMinor(int **minorMatrix, int **matrix, int sizeMatrix)
                     }
                 }
             }
-            minorMatrix[iRow] = new int[sizeMatrix];
+           
             //подсчет определителя
             minorMatrix[iRow][iColm] = opredelitel(vectorMinor);
-        }
+        } 
     }
 }
 //-------------------------------------------------------------------------------
 //матрица алгебраических дополнений
-void 
+void counterAlgebraicComplement(int **minorMatrix, int sizeMatrix)
+{
+    for (int i = 0; i < sizeMatrix; i++)
+    {
+        for (int j = 0; j < sizeMatrix; j++)
+        {
+            if ((i + j) % 2 != 0)
+                minorMatrix[i][j] *= -1;
+        }
+    }
+}
+
+//------------------------------------------------------------------------------------
+//транспонированная матрица алгебраического дополнения
+void transposedMatrixAlgebraicComplement(int **minorMatrix, int sizeMatrix)
+{
+    int **transposedMatrix = new int*[sizeMatrix];
+    for(int i = 0; i < sizeMatrix; i++)
+    {
+        transposedMatrix[i] = new int[sizeMatrix];
+        for(int j = 0; j < sizeMatrix; j++)
+        {
+            transposedMatrix[i][j] = minorMatrix[j][i];
+        }
+    }
+    for(int i = 0; i < sizeMatrix; i++)
+    {
+        for(int j = 0; j < sizeMatrix; j++)
+        {
+            minorMatrix[i][j] = transposedMatrix[i][j];
+        }
+    }
+}
 
 //------------------------------------------------------------------------------------
 int main()
@@ -214,12 +248,19 @@ int main()
     if (oprMatr == 0)
         cout << "Определитель равен нулю, обратная матрица не существует" << endl;
     else
-        cout << "Определитель " << oprMatr << endl;
+    {
+        //матрица миноров
+        int **minorMatrix = new int *[sizeMatrix];
 
-    //матрица миноров
-    int **minorMatrix = new int *[sizeMatrix];
-    //заполнение матрицы миноров
-    searchMatrixMinor(minorMatrix, matrix, sizeMatrix);
+        //заполнение матрицы миноров
+        searchMatrixMinor(minorMatrix, matrix, sizeMatrix);
 
+        //рассчет алгебраических дополнений
+        counterAlgebraicComplement(minorMatrix, sizeMatrix);
+
+        //поиск транспонированной матрицы алгебраических дополнений
+        transposedMatrixAlgebraicComplement(minorMatrix, sizeMatrix);
+        
+    }
     return 0;
 }
