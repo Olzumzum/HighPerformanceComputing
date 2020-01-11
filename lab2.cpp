@@ -20,10 +20,8 @@ vector<int> findPrimes(int startN, int endN)
 {
     //вектор для поиска простых чисел
     vector<bool> is_composite(endN);
-    //подсчет простых чисел 
+    //подсчет простых чисел
     int counterPrimes = 0;
-    
-    
 
     //исключаем числа, кратные 2
     for (int i = 4; i <= endN; i += 2)
@@ -32,7 +30,7 @@ vector<int> findPrimes(int startN, int endN)
     }
 
     int nextPrime = 3;
-    int stopAt = (int) sqrt(endN);
+    int stopAt = (int)sqrt(endN);
     while (nextPrime <= stopAt)
     {
         //исключаем числа, кратные данному простому числу
@@ -49,10 +47,10 @@ vector<int> findPrimes(int startN, int endN)
     }
 
     //подсчет простых чисел
-    for(int i = startN; i < endN; i++)
+    for (int i = startN; i < endN; i++)
     {
-        if(!is_composite[i])
-            counterPrimes++;         
+        if (!is_composite[i])
+            counterPrimes++;
     }
 
     //вектор для возврата функцией простых чисел
@@ -60,16 +58,50 @@ vector<int> findPrimes(int startN, int endN)
     //индекс для вектора простых чисел
     int indexVector = 0;
 
-    for(int i = startN; i <= endN; i++)
+    for (int i = startN; i <= endN; i++)
     {
-        if(!is_composite[i])
-            primes[indexVector++] = i;         
+        if (!is_composite[i])
+            primes[indexVector++] = i;
     }
 
-    cout << "Всего простых чисел: " << counterPrimes << endl;;
-    
+    cout << "Всего простых чисел: " << counterPrimes << endl;
+    ;
 
     return primes;
+}
+
+/**
+ * поиск циркулярно простых чисел
+ */
+void findCircularPrime(vector<int> prime)
+{
+    int circularNumber;
+    for (int i = 0; i <= prime.size(); i++)
+    {
+        //получение обратного числа
+        int p = prime[i];
+        //счетчик количества цифер в числе
+        int count = -1;
+        //считаем сколько цифер в числе
+        while(p != 0)
+        {
+            count++;
+            p /=10;
+        }
+
+        p = prime[i];
+        //обратное число
+        int cirlularNumber = 0;
+        //получаем обратное число
+        while (p!=0)
+        {
+           cirlularNumber += p % 10 * pow(10, count--);
+           p /= 10;
+        }
+        
+        
+        
+    }
 }
 
 int main()
@@ -88,8 +120,14 @@ int main()
 
     //поиск простых чисел
     primes = findPrimes(startN, endN);
-    
+
     //вывод всех чиселis_composite[i]
     for (int i = 0; i <= primes.size(); i++)
-        cout <<primes[i] << " ,";
+        cout << primes[i] << " ,";
+    cout << endl;
+
+    //поиск циркулярно простых чисел
+    findCircularPrime(primes);
+
+    return 0;
 }
