@@ -30,69 +30,6 @@ vector<int> expandingVectorDate(vector<int> v)
     return newV;
 }
 
-/** 
- * чтение данных из файла 
- * возвращает вектор значений
- */
-vector<int> loadFile()
-{
-    setlocale(LC_ALL, "rus");
-
-    //адрес файла
-    string path = "data.txt";
-    //пременная для файла
-    ifstream fin;
-    //переменная для чтения символа из файла
-    char ch;
-    //буфер данных
-    vector<int> vectorBuffer(100);
-    int indexBuffer = 0;
-    const char minus = '-';
-    //строка с цифрой матрицы
-    string numberValue;
-
-    fin.open(path);
-
-    if (!fin.is_open())
-        cout << "Ошибка открытия файла" << endl;
-    else
-    {
-        cout << "Файл открыт" << endl;
-        //записываем данные в буфер
-        //пока не кончится файл
-        while (fin.get(ch))
-        {
-            if (ch != ' ' && ch != ',')
-            {
-                //если число отрицательное - запомним минуc
-                if (ch == minus)
-                    numberValue = minus;
-                else
-                {
-                    numberValue += ch;
-
-                    if (vectorBuffer.size() <= indexBuffer)
-                        vectorBuffer = expandingVectorDate(vectorBuffer);
-                    vectorBuffer[indexBuffer++] = atoi(numberValue.c_str());
-
-                    //очищаем буфер
-                    numberValue = "";
-                }
-            }
-        }
-        //закрываем файл с данными
-        fin.close();
-
-        vector<int> vectorValue(indexBuffer);
-        for (int i = 0; i < indexBuffer; i++)
-        {
-            vectorValue[i] = vectorBuffer[i];
-        }
-
-        return vectorValue;
-    }
-}
-
 /**
  * поиск простых чисел решетом Эратосфена
  */
@@ -174,6 +111,7 @@ int findTwinsWithGivenDistance(int **massTwDistance, int **massTwins, int N, int
 
     if (indexTwDist > 0)
         massTwins = massTwDistance;
+        else cout << "Таких пар не существует" << endl;
 
     return indexTwDist;
 }
