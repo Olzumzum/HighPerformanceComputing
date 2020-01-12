@@ -22,13 +22,13 @@ vector<int> expandingVectorDate(vector<int> v)
 {
     int sizeV = v.size();
     vector<int> newV(sizeV * sizeV);
-    for(int i = 0; i < v.size(); i++)
+    for (int i = 0; i < v.size(); i++)
     {
         newV[i] = v[i];
     }
 
     return newV;
-} 
+}
 
 /** 
  * чтение данных из файла 
@@ -71,8 +71,8 @@ vector<int> loadFile()
                 {
                     numberValue += ch;
 
-                    if(vectorBuffer.size() <= indexBuffer)
-                    vectorBuffer = expandingVectorDate(vectorBuffer);
+                    if (vectorBuffer.size() <= indexBuffer)
+                        vectorBuffer = expandingVectorDate(vectorBuffer);
                     vectorBuffer[indexBuffer++] = atoi(numberValue.c_str());
 
                     //очищаем буфер
@@ -151,6 +151,65 @@ vector<int> findPrimes(int startN, int endN)
     return primes;
 }
 
+/**
+ * поиск близнецов на заданном расстоянии
+ */
+int findTwinsWithGivenDistance(int **massTwDistance, int **massTwins, int N, int indexS)
+{
+    int indexTwDist = 0;
+
+    for (int i = 1; i < indexS; i++)
+    {
+        if ((massTwins[i][0] - massTwins[i - 1][1]) == N)
+        {
+            massTwDistance[indexTwDist] = new int[4];
+            for (int j = i - 1, col = 0; j <= i; j++)
+            {
+                massTwDistance[indexTwDist][col++] = massTwins[j][0];
+                massTwDistance[indexTwDist][col++] = massTwins[j][1];
+            }
+            indexTwDist++;
+        }
+    }
+
+    if (indexTwDist > 0)
+        massTwins = massTwDistance;
+
+    return indexTwDist;
+}
+
+/** 
+ * поиск близнецов
+ */
+int findTwins(vector<int> primes, int **massTwins, int N)
+{
+    //индекс массива близнецов
+    int indexS = 0;
+
+    //поиск близнецов
+    for (int i = 1; i < primes.size(); i++)
+    {
+        if ((primes[i] - primes[i - 1]) == 2)
+        {
+            massTwins[indexS] = new int[2];
+            massTwins[indexS][0] = primes[i - 1];
+            massTwins[indexS++][1] = primes[i];
+        }
+    }
+
+    //уменьшаем размер массива
+    int **massResize = new int *[indexS];
+    for (int i = 0; i < indexS; i++)
+    {
+        massResize[i] = new int[2];
+        massResize[i][0] = massTwins[i][0];
+        massResize[i][1] = massTwins[i][1];
+    }
+    massTwins = massResize;
+
+    return indexS;
+}
+
 int main()
 {
     //начало диапазона простых чисел
@@ -165,22 +224,42 @@ int main()
     cout << "Введите конец диапазона: " << endl;
     cin >> endN;
 
-    if (startN >= endN){
+    if (startN >= endN)
+    {
         cout << "Вы ввели неверный диапазон";
         return 0;
     }
-    
+
     cout << "Введите расстрояне между близнецами " << endl;
     cin >> N;
 
-    if(N < 0){
+    if (N < 0)
+    {
         cout << "Расстояние введено неверно";
         return 0;
     }
 
+    //получение простых чисел в заданном диапазоне
     primes = findPrimes(startN, endN);
-     for (int i = 0; i < primes.size(); i++)
-        cout << primes[i] << " ,";
+    //массив близнецов
+    int **massTwins = new int *[primes.size()];
+    //поиск близнецов
+    int indexTwins = findTwins(primes, massTwins, N);
+
+//поиск близнецов на дистанции
+    int **massTwDistance = new int *[indexTwins];
+    int indexTwDist = findTwinsWithGivenDistance(massTwDistance, massTwins, N, indexTwins);
+    
+    for (int i = 0; i < indexTwDist; i++)
+    {
+        cout << "Пара близнецов ";
+        for (int j = 0; j < 4; j++)
+        {
+            cout << massTwDistance[i][j] << ", ";
+        }
+        cout << endl;
+    }
     cout << endl;
+
     return 0;
 }
