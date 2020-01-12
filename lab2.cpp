@@ -56,16 +56,17 @@ vector<int> findPrimes(int startN, int endN)
     //вектор для возврата функцией простых чисел
     vector<int> primes(counterPrimes);
     //индекс для вектора простых чисел
-    int indexVector = 0;
+    int indexVector = -1;
 
     for (int i = startN; i <= endN; i++)
     {
-        if (!is_composite[i])
-            primes[indexVector++] = i;
-    }
 
-    cout << "Всего простых чисел: " << counterPrimes << endl;
-    ;
+        if (!is_composite[i])
+        {
+            indexVector++;
+            primes[indexVector] = i;
+        }
+    }
 
     return primes;
 }
@@ -74,7 +75,7 @@ vector<int> findPrimes(int startN, int endN)
 bool simplicityTest(int circularNumber)
 {
     //получаем вектор простых чисел от нуля до circularNumber
-    vector<int> numberEratosfen = findPrimes(0, circularNumber - 1);
+    vector<int> numberEratosfen = findPrimes(0, circularNumber);
 
     //проверяем на делимость
     for (int j = 2; j < numberEratosfen.size(); j++)
@@ -160,7 +161,7 @@ int main()
     primes = findPrimes(startN, endN);
 
     //вывод всех чиселis_composite[i]
-    for (int i = 0; i <= primes.size(); i++)
+    for (int i = 0; i < primes.size(); i++)
         cout << primes[i] << " ,";
     cout << endl;
 
